@@ -1,0 +1,35 @@
+# Environment & secrets
+.env
+*.env
+
+# Virtual environment
+venv/
+botenv/
+.venv/
+env/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# FAISS index (large binary files)
+faiss_index/
+
+# SQLite databases
+*.db
+
+# IDE settings
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Streamlit
+.streamlit/secrets.toml
+
