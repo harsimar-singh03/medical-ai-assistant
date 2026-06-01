@@ -9,6 +9,11 @@
 [![Groq](https://img.shields.io/badge/Groq-LLaMA%203.3%2070B-F55036?style=for-the-badge&logo=groq&logoColor=white)](https://console.groq.com)
 [![FAISS](https://img.shields.io/badge/FAISS-Vector%20Search-0467DF?style=for-the-badge&logo=meta&logoColor=white)](https://faiss.ai)
 [![HuggingFace](https://img.shields.io/badge/HuggingFace-Embeddings-FFD21E?style=for-the-badge&logo=huggingface&logoColor=black)](https://huggingface.co)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Streamlit-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)](https://medical-ai-diagnose.streamlit.app/)
+
+<br/>
+
+### 🌐 [Try the Live App → medical-ai-diagnose.streamlit.app](https://medical-ai-diagnose.streamlit.app/)
 
 <br/>
 
@@ -25,6 +30,7 @@
 - [Architecture](#%EF%B8%8F-architecture)
 - [Project Structure](#-project-structure)
 - [Tech Stack](#-tech-stack)
+- [Requirements](#-requirements)
 - [Setup & Installation](#%EF%B8%8F-setup--installation)
 - [Usage](#-usage)
 - [UI Preview](#-ui-preview)
@@ -37,6 +43,8 @@
 ## 🌟 Overview
 
 **Medical AI Assistant** is a full-stack, multi-agent chatbot that simulates a clinical triage workflow. It collects patient symptoms, retrieves relevant medical knowledge from a PDF, generates a differential diagnosis, assesses urgency, finds real doctors from a local database, and handles appointment booking — all through a natural conversation interface built with Streamlit.
+
+**No installation needed** — try it instantly at [medical-ai-diagnose.streamlit.app](https://medical-ai-diagnose.streamlit.app/)
 
 ---
 
@@ -69,15 +77,36 @@ All agents share a single `state` dictionary (defined in `state/schema.py`). The
 
 <br/>
 
-
+```
+User Input
+    │
+    ▼
+  INTAKE (symptoms + city)
+    │
+    ▼
+  DIAGNOSIS (differential, may ask follow-up)
+    │
+    ▼
+  TRIAGE (EMERGENCY / URGENT / MODERATE / MILD)
+    │
+    ▼
+  CHAT (free conversation + intent detection)
+    │
+    ▼
+  DOCTOR FINDER (Excel search by specialty + city)
+    │
+    ▼
+  BOOKING (4-stage human-in-the-loop)
+```
 
 ---
 
 ## 📁 Project Structure
 
 ```
-medical-bot/
+medical-ai-assistant/
 ├── agents/                   # AI agents — each is an independent Python module
+│   ├── __init__.py
 │   ├── intake.py             # Collects symptoms + city (Pydantic extraction)
 │   ├── rag_pdf.py            # PDF ingestion, FAISS index, 2-stage retrieval
 │   ├── diagnosis.py          # Differential diagnosis with follow-up loop
@@ -88,9 +117,11 @@ medical-bot/
 │   └── emergency.py          # Emergency warning message generator
 │
 ├── state/
+│   ├── __init__.py
 │   └── schema.py             # BotState TypedDict — shared across all agents
 │
 ├── tools/
+│   ├── __init__.py
 │   ├── booking_db.py         # SQLite database for appointments
 │   ├── email_tool.py         # Gmail SMTP sender (mock fallback)
 │   └── time_utils.py         # Day/time parsing for booking
@@ -125,13 +156,63 @@ medical-bot/
 
 ---
 
+## 📋 Requirements
+
+### Python Version
+Python **3.10 or higher** is required.
+
+### Python Packages
+
+Install all dependencies with:
+```bash
+pip install -r requirements.txt
+```
+
+The full list of required packages:
+
+```txt
+streamlit
+langchain
+langchain-core
+langchain-groq
+langchain-community
+langchain-huggingface
+langchain-text-splitters
+faiss-cpu
+sentence-transformers
+pypdf
+pandas
+openpyxl
+pydantic
+python-dotenv
+```
+
+### API Keys Required
+
+| Key | Where to get it | Required? |
+|---|---|---|
+| `GROQ_API_KEY` | [console.groq.com](https://console.groq.com) — free tier available | ✅ Required |
+| `GMAIL_ADDRESS` | Your Gmail address | ⚙️ Optional (for email confirmations) |
+| `GMAIL_APP_PASSWORD` | [myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords) | ⚙️ Optional (for email confirmations) |
+
+> If Gmail credentials are not provided, the app falls back to **mock email mode** and still works fully.
+
+### Data Files Required
+
+| File | Path | Description |
+|---|---|---|
+| Medical PDF | `data/diseases.pdf` | Medical reference textbook for RAG retrieval |
+| Doctor Database | `data/doctors.xlsx` | Excel file with doctor records (see format below) |
+
+---
+
 ## ⚙️ Setup & Installation
 
 ### 1. Clone the repository
 
 ```bash
-git clone <your-repo-url>
-cd medical-bot
+git clone https://github.com/harsimar-singh03/medical-ai-assistant.git
+cd medical-ai-assistant
 ```
 
 ### 2. Create a virtual environment
@@ -164,9 +245,6 @@ GMAIL_ADDRESS=your_email@gmail.com
 GMAIL_APP_PASSWORD=your_app_password
 ```
 
-> **Groq API key** — free tier available at [console.groq.com](https://console.groq.com)  
-> **Gmail** — enable 2-factor authentication and generate an [App Password](https://myaccount.google.com/apppasswords)
-
 ### 5. Add your data files
 
 - Place your medical reference PDF as `data/diseases.pdf`
@@ -196,6 +274,8 @@ GMAIL_APP_PASSWORD=your_app_password
 ```bash
 streamlit run ui/app.py
 ```
+
+
 
 ---
 
@@ -246,7 +326,7 @@ streamlit run ui/app.py
 
 ---
 
-## 🙏 Acknowledgements
+##  Acknowledgements
 
 - [Groq](https://groq.com) — fast LLM inference
 - [Streamlit](https://streamlit.io) — web UI framework
@@ -260,6 +340,6 @@ streamlit run ui/app.py
 
 Made with ❤️ for better healthcare accessibility
 
+**[🌐 Try Live App](https://medical-ai-diagnose.streamlit.app/)**
+
 </div>
-#   m e d i c - h e l p  
- 
