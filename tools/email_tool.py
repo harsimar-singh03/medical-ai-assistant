@@ -13,9 +13,10 @@ def send_booking_email(patient_name, patient_email, doctor_name, clinic_name,
     Falls back to mock if email credentials not configured.
     """
     
-    sender_email = os.getenv("GMAIL_ADDRESS")
-    app_password = os.getenv("GMAIL_APP_PASSWORD")
-    
+    import streamlit as st
+    sender_email = st.secrets.get("GMAIL_ADDRESS") or os.getenv("GMAIL_ADDRESS")
+    app_password = st.secrets.get("GMAIL_APP_PASSWORD") or os.getenv("GMAIL_APP_PASSWORD")
+            
     if not sender_email or not app_password:
         # Mock mode
         print(f"\n📧 [MOCK EMAIL] To: {patient_email}")

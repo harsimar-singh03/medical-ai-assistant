@@ -4,6 +4,11 @@ from pydantic import BaseModel, Field
 
 llm = ChatGroq(model="llama-3.3-70b-versatile", temperature=0.3)
 
+import streamlit as st
+import os
+if "GROQ_API_KEY" in st.secrets:
+    os.environ["GROQ_API_KEY"] = st.secrets["GROQ_API_KEY"]
+
 
 #  Pydantic model 
 class IntakeInfo(BaseModel):

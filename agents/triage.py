@@ -7,6 +7,12 @@ from langchain_core.messages import AIMessage, HumanMessage
 
 llm = ChatGroq(model="llama-3.3-70b-versatile", temperature=0.1)
 
+import streamlit as st
+import os
+if "GROQ_API_KEY" in st.secrets:
+    os.environ["GROQ_API_KEY"] = st.secrets["GROQ_API_KEY"]
+
+
 RED_FLAGS = [
     "Chest pain with shortness of breath or sweating",
     "Stroke signs: sudden face drooping, arm weakness, or slurred speech",

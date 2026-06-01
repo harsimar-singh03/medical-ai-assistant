@@ -17,6 +17,12 @@ PDF_PATH      = os.path.join(BASE_DIR, "data", "diseases.pdf")
 
 _vector_db = None
 
+import streamlit as st
+import os
+if "GROQ_API_KEY" in st.secrets:
+    os.environ["GROQ_API_KEY"] = st.secrets["GROQ_API_KEY"]
+
+
 #Vector DB 
 def build_vector_db():
     global _vector_db
