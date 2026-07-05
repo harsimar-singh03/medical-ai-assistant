@@ -2,14 +2,17 @@ from langchain_groq import ChatGroq
 from langchain_core.messages import AIMessage, HumanMessage
 from agents.rag_pdf import search_medical_knowledge
 
-llm = ChatGroq(model="llama-3.3-70b-versatile", temperature=0.1)
-chat_llm = ChatGroq(model="llama-3.3-70b-versatile", temperature=0.4)
+llm = ChatGroq(model="openai/gpt-oss-120b", temperature=0.1)
+chat_llm = ChatGroq(model="openai/gpt-oss-120b", temperature=0.4)
 
 
 import streamlit as st
 import os
-if "GROQ_API_KEY" in st.secrets:
-    os.environ["GROQ_API_KEY"] = st.secrets["GROQ_API_KEY"]
+try:
+    if "GROQ_API_KEY" in st.secrets:
+        os.environ["GROQ_API_KEY"] = st.secrets["GROQ_API_KEY"]
+except Exception:
+    pass
 
 
 # INTENT DETECTION 
@@ -17,8 +20,8 @@ if "GROQ_API_KEY" in st.secrets:
 def _detect_intent(user_message: str, diagnosis: str, symptoms: str) -> str:
     prompt = f"""You are an intent classifier for a medical chatbot.
 
-The patient was just shown this diagnosis:
-\"\"\"{diagnosis[:300]}\"\"\"
+        The patient was just shown this diagnosis:
+        \"\"\"{diagnosis[:300]}\"\"\"
 
         Their symptoms: {symptoms}
 
@@ -76,7 +79,7 @@ def chat_agent(state: dict) -> dict:
         history += f"{role}: {m.content}\n"
 
     # RAG (optional, can be kept or removed for speed)
-    contexts, _ = search_medical_knowledge(f"{symptoms} {last_msg}", k=2)
+    contexts = search_medical_knowledge(f"{symptoms} {last_msg}", k=2)
     context_text = "\n\n".join(contexts) if contexts else ""
 
     #  BOOKING‑AWARE CLOSING LINE 

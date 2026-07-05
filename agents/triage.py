@@ -5,12 +5,15 @@ import re
 from langchain_groq import ChatGroq
 from langchain_core.messages import AIMessage, HumanMessage
 
-llm = ChatGroq(model="llama-3.3-70b-versatile", temperature=0.1)
+llm = ChatGroq(model="openai/gpt-oss-120b", temperature=0.1)
 
 import streamlit as st
 import os
-if "GROQ_API_KEY" in st.secrets:
-    os.environ["GROQ_API_KEY"] = st.secrets["GROQ_API_KEY"]
+try:
+    if "GROQ_API_KEY" in st.secrets:
+        os.environ["GROQ_API_KEY"] = st.secrets["GROQ_API_KEY"]
+except Exception:
+    pass
 
 
 RED_FLAGS = [

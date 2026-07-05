@@ -74,9 +74,16 @@ def find_doctors(symptoms, city=None, max_results=3):
         speciality = "General Physician"
 
     if city:
-        doctors = _filter_city(doctors, city)
-        if not doctors:
-            return [], speciality, True   # city not found
+        filtered = _filter_city(doctors, city)
+        if not filtered:
+            # Fall back to General Physician in the same city if not already searching for one
+            if speciality != "General Physician":
+                general_docs = DOCTORS_DB.get("General Physician", [])
+                filtered_general = _filter_city(general_docs, city)
+                if filtered_general:
+                    return filtered_general[:max_results], "General Physician", False
+            return [], speciality, True   # city not found (or no General Physician either)
+        doctors = filtered
 
     return doctors[:max_results], speciality, False
 
@@ -91,11 +98,16 @@ def doctor_finder_agent(state):
 
     messages = list(state.get("messages", []))
     if city_not_found:
-        msg = (f"😔 No **{speciality}** found in **{city}**.\n\n"
-               "1. Search in **all cities**\n2. Try a **different city**\n3. Show **other specialists**")
-        return {**state, "messages": messages + [AIMessage(content=msg)],
-                "doctors_list": [], "booking_stage": "no_doctor_found", "no_doctor_speciality": speciality,
-                "selected_doctor": None, "human_approval": False}
+        msg = f"😔 We couldn't find any doctors in **{city}** matching your symptoms.\n\nPlease check Google Maps or contact local hospitals directly to find a doctor near you."
+        return {
+            **state,
+            "messages": messages + [AIMessage(content=msg)],
+            "doctors_list": [],
+            "selected_doctor": None,
+            "booking_complete": True,
+            "booking_stage": "done",
+            "human_approval": False
+        }
     if doctors:
         lines = []
         for i, d in enumerate(doctors, 1):

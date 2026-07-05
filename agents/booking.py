@@ -4,7 +4,6 @@ from tools.time_utils import extract_day_time, validate_slot
 from tools.booking_db import save_booking
 from tools.email_tool import send_booking_email
 from agents.doctor_finder import find_doctors
-from agents.doctor_finder import find_doctors, DOCTORS_DB
 
 def _get_last_user_msg(messages: list) -> str:
     for msg in reversed(messages):
@@ -12,13 +11,7 @@ def _get_last_user_msg(messages: list) -> str:
             return msg.content.strip().lower()
     return ""
 
-def _format_doctor_list(doctors: list) -> str:
-    lines = []
-    for i, d in enumerate(doctors, 1):
-        lines.append(
-            f"{i}. **{d.get('Name', '')}** —  {d.get('City', '')} —  {d.get('Rating', '')}/5\n\n"
-        )
-    return "".join(lines)
+
 
 def _finalize_booking(state, doc):
     booking_data = {
@@ -52,50 +45,7 @@ def _finalize_booking(state, doc):
     )
     return booking_id
 
-def _handle_no_doctor(state, messages, last_msg):
-    
-    symptoms = state.get("symptoms", "")
-    city = state.get("city", "")
 
-    if "1" in last_msg or "all cities" in last_msg:
-        docs, spec, _ = find_doctors(symptoms, city=None)
-        if docs:
-            msg = f" Found **{spec}** across all cities:\n\n{_format_doctor_list(docs)}Reply with number to select."
-            messages.append(AIMessage(content=msg))
-            return {**state, "messages": messages, "doctors_list": docs, "booking_stage": "select_doctor", "human_approval": False}
-        messages.append(AIMessage(content=" No doctors found in any city. Try different symptoms."))
-        return {**state, "messages": messages, "human_approval": True}
-
-    if "2" in last_msg or "different city" in last_msg:
-        messages.append(AIMessage(content="Which city should I search in?"))
-        return {**state, "messages": messages, "booking_stage": "change_city", "human_approval": False}
-
-    if "3" in last_msg or "other specialist" in last_msg:
-        general = DOCTORS_DB.get("General Physician", [])
-        city_lower = city.lower()
-        city_docs = [d for d in general if city_lower in str(d.get('City', '')).lower()]
-        if city_docs:
-            msg = f" Found **General Physicians** in {city}:\n\n{_format_doctor_list(city_docs[:3])}Reply with number."
-            messages.append(AIMessage(content=msg))
-            return {**state, "messages": messages, "doctors_list": city_docs[:3], "booking_stage": "select_doctor", "human_approval": False}
-        messages.append(AIMessage(content=f"No General Physicians found in {city} either."))
-        return {**state, "messages": messages, "human_approval": False}
-
-    messages.append(AIMessage(content="Please choose: 1 (all cities), 2 (different city), or 3 (other specialists)"))
-    return {**state, "messages": messages, "human_approval": False}
-
-
-def _handle_change_city(state, messages, last_msg):
-    
-    new_city = last_msg.strip()
-    docs, spec, _ = find_doctors(state.get("symptoms", ""), city=new_city)
-    if docs:
-        msg = f" Found **{spec}** in **{new_city}**:\n\n{_format_doctor_list(docs)}Reply with number."
-        messages.append(AIMessage(content=msg))
-        return {**state, "messages": messages, "doctors_list": docs, "city": new_city, "booking_stage": "select_doctor", "human_approval": False}
-    msg = f" No {spec} found in {new_city} either. Try 1 (all cities) or 3 (other specialists)."
-    messages.append(AIMessage(content=msg))
-    return {**state, "messages": messages, "booking_stage": "no_doctor_found", "human_approval": False}
 
 
 def _handle_select_doctor(state, messages, last_msg, doctors):
@@ -187,10 +137,7 @@ def human_approval_node(state):
     selected_doctor = state.get("selected_doctor")
     stage = state.get("booking_stage", "select_doctor")
 
-    if stage == "no_doctor_found":
-        return _handle_no_doctor(state, messages, last_msg)
-    if stage == "change_city":
-        return _handle_change_city(state, messages, last_msg)
+
     if stage == "select_doctor":
         return _handle_select_doctor(state, messages, last_msg, doctors)
     if stage == "select_slot" and selected_doctor:

@@ -69,7 +69,7 @@ def current_phase(state: dict) -> str:
         return "CHAT"
     if state.get("human_approval") and state.get("booking_stage") == "done":
         return "CHAT"
-    if state.get("doctors_list") or state.get("booking_stage") in ("no_doctor_found", "change_city"):
+    if state.get("doctors_list"):
         return "BOOKING"
 
     #  MULTIPLE DIAGNOSIS ROUNDS BEFORE TRIAGE 
@@ -82,6 +82,7 @@ def current_phase(state: dict) -> str:
     if state.get("intake_done"):
         return "CHAT"
     return "INTAKE"
+
 
 
 def show_last_ai(state: dict):
