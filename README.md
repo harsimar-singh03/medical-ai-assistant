@@ -6,7 +6,6 @@
 
 [![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
 [![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)](https://streamlit.io)
-[![Groq](https://img.shields.io/badge/Groq-LLaMA%203.3%2070B-F55036?style=for-the-badge&logo=groq&logoColor=white)](https://console.groq.com)
 [![FAISS](https://img.shields.io/badge/FAISS-Vector%20Search-0467DF?style=for-the-badge&logo=meta&logoColor=white)](https://faiss.ai)
 [![HuggingFace](https://img.shields.io/badge/HuggingFace-Embeddings-FFD21E?style=for-the-badge&logo=huggingface&logoColor=black)](https://huggingface.co)
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-Streamlit-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)](https://medical-ai-diagnose.streamlit.app/)
@@ -144,7 +143,7 @@ medical-ai-assistant/
 
 | Layer | Technology |
 |---|---|
-| **LLM** | Groq — LLaMA 3.3 70B |
+| **LLM** | Groq — GPT-OSS 120B |
 | **Orchestration** | Streamlit phase-based state machine |
 | **RAG** | FAISS + HuggingFace Embeddings |
 | **PDF Parsing** | PyPDF |
